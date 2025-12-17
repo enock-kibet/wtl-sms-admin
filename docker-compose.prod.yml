@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  vue-project:
+    container_name: wtl-sms-instructor
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: instructor-sms
+    ports:
+      - 8080:80

@@ -1,0 +1,289 @@
+<script setup lang="ts">
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { VForm } from 'vuetify/components/VForm'
+import type { Departments } from '@/data/models/departments'
+import type { Instructors, iInstructors } from '@/data/models/instructors'
+import { submitInstructor, updateInstructor } from '@/pages/attendance-reports/core/request'
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'update:isDrawerOpen', val: boolean): void
+}>()
+
+interface Props {
+  isDrawerOpen: boolean
+  instructorData?: iInstructors
+  instructorsData?: Instructors[]
+  fetchInstructors?: () => Promise<void>
+  departmentsData?: Departments[]
+}
+
+const status = ref([
+  { title: 'Active', value: 'active' },
+  { title: 'Inactive', value: 'inactive' },
+])
+
+const instructorFields = ref({
+  title: props.instructorData?.title || '',
+  first_name: props.instructorData?.first_name || '',
+  last_name: props.instructorData?.last_name || '',
+  phone: props.instructorData?.phone || '',
+  pf_number: props.instructorData?.pf_number || '',
+  email: props.instructorData?.email || '',
+  department_id: props.instructorData?.department_id || '',
+  status: props.instructorData?.status || '',
+})
+
+const errors = ref<Record<string, string | undefined>>({
+  first_name: undefined,
+  last_name: undefined,
+  phone: undefined,
+  email: undefined,
+  pf_number: undefined,
+  reg_no: undefined,
+  department_id: undefined,
+  academic_year_id: undefined,
+  status: undefined,
+  fails: undefined,
+})
+
+const refForm = ref<VForm>()
+
+watch(() => props.isDrawerOpen, val => {
+  if (val && props.instructorData?.id) {
+    instructorFields.value = {
+      title: props.instructorData?.title || '',
+      first_name: props.instructorData?.first_name || '',
+      last_name: props.instructorData?.last_name || '',
+      phone: props.instructorData?.phone || '',
+      pf_number: props.instructorData?.pf_number || '',
+      email: props.instructorData?.email || '',
+      department_id: props.instructorData?.department_id || '',
+      status: props.instructorData?.status || '',
+    }
+  }
+  else {
+    // Reset form fields when drawer is opened
+    refForm.value?.reset()
+    refForm.value?.resetValidation()
+  }
+})
+
+const handleSubmit = () => {
+  refForm.value?.validate().then(async ({ valid }) => {
+    if (!valid)
+      return
+
+    const result = await submitInstructor(instructorFields.value, errors)
+
+    // Only close drawer if request succeeds AND has no validation errors
+    if (result) {
+      props.fetchInstructors && await props.fetchInstructors()
+      emit('update:isDrawerOpen', false)
+      showToast('Instructor added successfully', 'success')
+    }
+  })
+}
+
+const handleUpdate = () => {
+  // Similar to handleSubmit but for updating existing instructor
+  refForm.value?.validate().then(async ({ valid }) => {
+    if (!valid)
+      return
+
+    if (!props.instructorData?.id)
+      return
+
+    const result = await updateInstructor(props.instructorData?.id, instructorFields.value, errors)
+
+    // Only close drawer if request succeeds AND has no validation errors
+    if (result) {
+      props.fetchInstructors && await props.fetchInstructors()
+      emit('update:isDrawerOpen', false)
+      showToast('Instructor updated successfully', 'success')
+    }
+  })
+}
+
+const submitInstructorFunc = () => {
+  if (props.instructorData?.id)
+    handleUpdate()
+
+  else
+    handleSubmit()
+}
+
+// 👉 Form
+
+const onCancel = () => {
+  emit('update:isDrawerOpen', false)
+
+  nextTick(() => {
+    refForm.value?.reset()
+    refForm.value?.resetValidation()
+  })
+}
+
+const dialogModelValueUpdate = (val: boolean) => {
+  emit('update:isDrawerOpen', val)
+}
+</script>
+
+<template>
+  <VNavigationDrawer
+    data-allow-mismatch
+    temporary
+    location="end"
+    :model-value="props.isDrawerOpen"
+    width="370"
+    :border="0"
+    class="scrollable-content"
+    @update:model-value="dialogModelValueUpdate"
+  >
+    <!-- 👉 Header -->
+    <AppDrawerHeaderSection
+      :title="props.instructorData?.id ? 'Edit Instructor' : 'Add Instructor'"
+      @cancel="$emit('update:isDrawerOpen', false)"
+    >
+      <template #beforeClose>
+        <!--
+          <IconBtn
+          v-show="event.id"
+          @click="removeEvent"
+          >
+          <VIcon
+          size="18"
+          icon="tabler-trash"
+          />
+          </IconBtn>
+        -->
+      </template>
+    </AppDrawerHeaderSection>
+
+    <VDivider />
+
+    <PerfectScrollbar :options="{ wheelPropagation: false }">
+      <VCard flat>
+        <VCardText>
+          <!-- SECTION Form -->
+          <VForm
+            ref="refForm"
+            @submit.prevent="submitInstructorFunc"
+          >
+            <VRow>
+              <!-- Title  -->
+              <VCol
+                cols="12"
+                class="pb-1"
+              >
+                <AppSelect
+                  v-model="instructorFields.title"
+                  :items="['Dr', 'Prof', 'Mr', 'Mrs', 'Miss']"
+                  :rules="[requiredValidator]"
+                  label="Title"
+                  placeholder="Select your title"
+                  :error-messages="errors.title"
+                />
+              </VCol>
+
+              <!-- 👉 First Name -->
+              <VCol cols="6">
+                <AppTextField
+                  v-model="instructorFields.first_name"
+                  label="First Name"
+                  placeholder="First Name of the instructor"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 Last Name -->
+              <VCol cols="6">
+                <AppTextField
+                  v-model="instructorFields.last_name"
+                  label="Last Name"
+                  placeholder="Last Name of the instructor"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 PF Number -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="instructorFields.pf_number"
+                  label="PF Number"
+                  placeholder="PF Number"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 Phone Number -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="instructorFields.phone"
+                  label="Phone Number"
+                  placeholder="Phone Number"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 Email -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="instructorFields.email"
+                  label="Email"
+                  placeholder="Email"
+                  :rules="[emailValidator]"
+                />
+              </VCol>
+
+              <!-- Departments -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="instructorFields.department_id"
+                  :items="departmentsData"
+                  item-title="name"
+                  item-value="id"
+                  label="Department"
+                  placeholder="Select Department"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 Status Select -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="instructorFields.status"
+                  :items="status"
+                  item-title="title"
+                  item-value="value"
+                  label="Status"
+                  placeholder="Select Status"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 Form buttons -->
+              <VCol cols="12">
+                <VBtn
+                  type="submit"
+                  class="me-3"
+                >
+                  {{ props.instructorData?.id ? 'Update Lecturer' : 'Add Lecturer' }}
+                </VBtn>
+                <VBtn
+                  variant="outlined"
+                  color="secondary"
+                  @click="onCancel"
+                >
+                  Cancel
+                </VBtn>
+              </VCol>
+            </VRow>
+          </VForm>
+        <!-- !SECTION -->
+        </VCardText>
+      </VCard>
+    </PerfectScrollbar>
+  </VNavigationDrawer>
+</template>
