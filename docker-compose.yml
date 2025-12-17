@@ -2,10 +2,10 @@ version: "3"
 
 services:
   vue-project:
-    container_name: wtl-sms-instructor
+    container_name: wtl-sms-administrator
     build:
       context: .
       dockerfile: Dockerfile
-    image: instructor-sms
+    image: administrator-sms
     ports:
       - 18005:80
