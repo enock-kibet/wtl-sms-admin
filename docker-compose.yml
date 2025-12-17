@@ -8,4 +8,4 @@ services:
       dockerfile: Dockerfile
     image: instructor-sms
     ports:
-      - 8080:80
+      - 18005:80
