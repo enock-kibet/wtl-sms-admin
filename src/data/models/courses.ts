@@ -1,3 +1,5 @@
+import type { Instructors } from './instructors'
+
 export interface Courses {
   id: string
   name: string
@@ -7,6 +9,7 @@ export interface Courses {
   academic_year_id?: string
   description?: string
   attachments?: File[]
+  lecturer?: Instructors[]
   status: string
   created_at: string
   updated_at: string

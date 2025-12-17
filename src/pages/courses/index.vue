@@ -236,6 +236,15 @@ const academicYears = computed((): iAcademicYear[] => academicYearsData.value.da
             class="text-no-wrap"
             @update:options="updateOptions"
           >
+            <!-- lecturer -->
+            <template #item.lecturer="{ item }">
+              <template
+                v-for="lec in item.lecturer"
+                :key="lec.id"
+              >
+                <div>{{ `${lec.first_name} ${lec.last_name}` }}</div>
+              </template>
+            </template>
             <!-- status -->
             <template #item.status="{ item }">
               <VChip
