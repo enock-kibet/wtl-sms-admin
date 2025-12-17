@@ -26,7 +26,7 @@ const yearFields = ref({
   name: props.yearData?.name || '',
   description: props.yearData?.description || '',
   start_date: props.yearData?.start_date || '',
-  icon: props.yearData?.icon || null,
+  icon: null,
   end_date: props.yearData?.end_date || '',
   status: props.yearData?.status || 'active',
 })
@@ -49,7 +49,7 @@ watch(() => props.isDrawerOpen, val => {
       name: props.yearData?.name || '',
       description: props.yearData?.description || '',
       start_date: props.yearData?.start_date || '',
-      icon: props.yearData?.icon || null,
+      icon: null,
       end_date: props.yearData?.end_date || '',
       status: props.yearData?.status || 'active',
     }
