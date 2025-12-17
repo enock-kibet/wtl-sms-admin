@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { SearchResults } from '@db/app-bar-search/types'
 import Shepherd from 'shepherd.js'
 import { withQuery } from 'ufo'
 import type { RouteLocationRaw } from 'vue-router'
-import type { SearchResults } from '@db/app-bar-search/types'
 import { useConfigStore } from '@core/stores/config'
 
 interface Suggestion {
@@ -30,39 +30,68 @@ const isLoading = ref(false)
 
 const suggestionGroups: SuggestionGroup[] = [
   {
-    title: 'Popular Searches',
+    title: 'Quick Access',
     content: [
-      { icon: 'tabler-chart-bar', title: 'Analytics', url: { name: 'dashboards-analytics' } },
-      { icon: 'tabler-chart-donut-3', title: 'CRM', url: { name: 'dashboards-crm' } },
-      { icon: 'tabler-shopping-cart', title: 'eCommerce', url: { name: 'dashboards-ecommerce' } },
-      { icon: 'tabler-truck', title: 'Logistics', url: { name: 'dashboards-logistics' } },
+      {
+        icon: 'tabler-smart-home',
+        title: 'Dashboard',
+        url: { name: 'root' },
+      },
+      {
+        icon: 'tabler-vocabulary',
+        title: 'Courses',
+        url: { name: 'courses' },
+      },
+      {
+        icon: 'tabler-chart-bar-popular',
+        title: 'Performance',
+        url: { name: 'performance' },
+      },
+      {
+        icon: 'tabler-edit',
+        title: 'Evaluations',
+        url: { name: 'evaluations' },
+      },
     ],
   },
   {
-    title: 'Apps & Pages',
+    title: 'Learning',
     content: [
-      { icon: 'tabler-calendar', title: 'Calendar', url: { name: 'apps-calendar' } },
-      { icon: 'tabler-lock', title: 'Roles & Permissions', url: { name: 'apps-roles' } },
-      { icon: 'tabler-settings', title: 'Account Settings', url: { name: 'pages-account-settings-tab', params: { tab: 'account' } } },
-      { icon: 'tabler-copy', title: 'Dialog Examples', url: { name: 'pages-dialog-examples' } },
+      {
+        icon: 'tabler-book',
+        title: 'My Courses',
+        url: { name: 'courses' },
+      },
+      {
+        icon: 'tabler-list-check',
+        title: 'Evaluations',
+        url: { name: 'evaluations' },
+      },
     ],
   },
   {
-    title: 'User Interface',
+    title: 'Insights',
     content: [
-      { icon: 'tabler-typography', title: 'Typography', url: { name: 'pages-typography' } },
-      { icon: 'tabler-menu-2', title: 'Accordion', url: { name: 'components-expansion-panel' } },
-      { icon: 'tabler-info-triangle', title: 'Alert', url: { name: 'components-alert' } },
-      { icon: 'tabler-checkbox', title: 'Cards', url: { name: 'pages-cards-card-basic' } },
+      {
+        icon: 'tabler-chart-line',
+        title: 'Performance Overview',
+        url: { name: 'performance' },
+      },
+      {
+        icon: 'tabler-chart-bar',
+        title: 'Progress Tracking',
+        url: { name: 'performance' },
+      },
     ],
   },
   {
-    title: 'Forms & Tables',
+    title: 'Account',
     content: [
-      { icon: 'tabler-circle-dot', title: 'Radio', url: { name: 'forms-radio' } },
-      { icon: 'tabler-file-invoice', title: 'Form Layouts', url: { name: 'forms-form-layouts' } },
-      { icon: 'tabler-table', title: 'Table', url: { name: 'tables-data-table' } },
-      { icon: 'tabler-edit', title: 'Editor', url: { name: 'forms-editors' } },
+      {
+        icon: 'tabler-user-edit',
+        title: 'My Profile',
+        url: { name: 'my-profile' },
+      },
     ],
   },
 ]
@@ -70,19 +99,24 @@ const suggestionGroups: SuggestionGroup[] = [
 // 👉 No Data suggestion
 const noDataSuggestions: Suggestion[] = [
   {
-    title: 'Analytics',
-    icon: 'tabler-chart-bar',
-    url: { name: 'dashboards-analytics' },
+    icon: 'tabler-smart-home',
+    title: 'Dashboard',
+    url: { name: 'root' },
   },
   {
-    title: 'CRM',
-    icon: 'tabler-chart-donut-3',
-    url: { name: 'dashboards-crm' },
+    icon: 'tabler-vocabulary',
+    title: 'Courses',
+    url: { name: 'courses' },
   },
   {
-    title: 'eCommerce',
-    icon: 'tabler-shopping-cart',
-    url: { name: 'dashboards-ecommerce' },
+    icon: 'tabler-chart-bar-popular',
+    title: 'Performance',
+    url: { name: 'performance' },
+  },
+  {
+    icon: 'tabler-edit',
+    title: 'Evaluations',
+    url: { name: 'evaluations' },
   },
 ]
 
@@ -242,7 +276,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
 </template>
 
 <style lang="scss">
-@use "@styles/variables/vuetify.scss";
+@use "@styles/variables/vuetify";
 
 .meta-key {
   border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
