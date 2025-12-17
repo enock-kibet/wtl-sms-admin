@@ -2,7 +2,7 @@
 FROM node:18 as builder
 
 # Set the working directory in the container
-WORKDIR /var/www/wtl/smsfr/instructor
+WORKDIR /var/www/wtl/smsfr/administrator
 
 # Copy package.json and yarn.lock to the container
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
@@ -32,7 +32,7 @@ FROM nginx:stable-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the built Vue.js files to the Nginx web server directory
-COPY --from=builder /var/www/wtl/smsfr/instructor/dist /usr/share/nginx/html
+COPY --from=builder /var/www/wtl/smsfr/administrator/dist /usr/share/nginx/html
 
 # Expose port 80 for Nginx
 EXPOSE 80

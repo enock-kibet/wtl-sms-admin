@@ -2,13 +2,13 @@ version: "3"
 
 services:
   vue:
-    container_name: wtl-sms-instructor_dev
+    container_name: wtl-sms-administrator_dev
     build:
       context: .
       dockerfile: dev.Dockerfile
     ports:
       - "5173:5173"
     volumes:
-      - .:/var/www/wtl/smsfr/instructor
-      - /var/www/wtl/smsfr/instructor/node_modules
+      - .:/var/www/wtl/smsfr/administrator
+      - /var/www/wtl/smsfr/administrator/node_modules
     restart: always
