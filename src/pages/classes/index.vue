@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Classes, iClasses } from '@/data/models/classes'
 import type { Courses } from '@/data/models/courses'
-import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
 import type { iAcademicYear } from '@/data/models/schools'
 import ClassSideForm from '@/views/modal/ClassSideForm.vue'
@@ -18,8 +17,10 @@ const isClassHandlerSidebarActive = ref(false)
 const headers = [
   { title: 'Class Title', key: 'title' },
   { title: 'Lecturer', key: 'lecturer' },
-  { title: 'School', key: 'school' },
-  { title: 'Department', key: 'department' },
+  { title: 'Course', key: 'course' },
+
+  // { title: 'School', key: 'school' },
+  // { title: 'Department', key: 'department' },
   { title: 'Created At', key: 'created_at' },
   { title: 'Updated At', key: 'updated_at' },
   { title: 'Status', key: 'status' },
@@ -67,6 +68,12 @@ const selectedClass = ref<iClasses>({
 const resolveStatus = (statusMsg: string) => {
   if (statusMsg === 'active')
     return { text: 'Active', color: 'success' }
+  if (statusMsg === 'ongoing')
+    return { text: 'Ongoing', color: 'success' }
+  if (statusMsg === 'upcoming')
+    return { text: 'Upcoming', color: 'success' }
+  if (statusMsg === 'past')
+    return { text: 'Past', color: 'warning' }
   if (statusMsg === 'inactive')
     return { text: 'Inactive', color: 'error' }
 
@@ -111,11 +118,10 @@ const addClass = () => {
     scheduled_at: '',
     duration: '',
     title: '',
-    department_id: '',
     description: '',
     academic_year_id: '',
     instructor_id: '',
-    status: '',
+    status: 'active',
     attachments: [],
     course_code: '',
   }
@@ -126,23 +132,6 @@ const editClass = (iclasses: iClasses) => {
   selectedClass.value = iclasses
   isClassHandlerSidebarActive.value = true
 }
-
-const { data: departmentsData, execute: fetchDepartments } = await useApi<any>(createUrl('/department/list',
-  {
-    query: {
-      q: searchQuery,
-      stock: selectedStock,
-      category: selectedCategory,
-      status: selectedStatus,
-      page,
-      itemsPerPage,
-      sortBy,
-      orderBy,
-    },
-  },
-))
-
-const departments = computed((): Departments[] => departmentsData.value.data)
 
 const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(createUrl('/administrator/instructors',
   {
@@ -322,7 +311,6 @@ const courses = computed((): Courses[] => coursesData.value.data)
     v-model:is-drawer-open="isClassHandlerSidebarActive"
     v-model:class-data="selectedClass"
     :fetch-classes="fetchClasses"
-    :departments-data="departments"
     :academic-years-data="academicYears"
     :instructor-data="instructors"
     :courses-data="courses"

@@ -136,51 +136,66 @@ const editAcademicYear = (year: iAcademicYear) => {
           Add Academic Year
         </VBtn>
       </VCol>
-      <template
-        v-for="year in academicYears"
-        :key="year.id"
-      >
-        <VCol
-          cols="12"
-          md="3"
+      <template v-if="academicYears.length > 0">
+        <template
+          v-for="year in academicYears"
+          :key="year.id"
         >
-          <VCard class="mb-6 text-center position-relative">
-            <div class="position-absolute right-0">
-              <IconBtn @click="editAcademicYear(year)">
-                <VIcon icon="tabler-edit" />
-              </IconBtn>
-            </div>
-            <VCardText>
-              <template v-if="year.icon_url">
-                <img
-                  :src="year.icon_url"
-                  width="200"
-                >
-              </template>
-              <template v-else>
-                <VAvatar
-                  color="primary"
-                  :size="50"
-                  rounded
+          <VCol
+            cols="12"
+            md="3"
+          >
+            <VCard class="mb-6 text-center position-relative">
+              <div class="position-absolute right-0">
+                <IconBtn @click="editAcademicYear(year)">
+                  <VIcon icon="tabler-edit" />
+                </IconBtn>
+              </div>
+              <VCardText>
+                <template v-if="year.icon_url">
+                  <img
+                    :src="year.icon_url"
+                    width="200"
+                  >
+                </template>
+                <template v-else>
+                  <VAvatar
+                    color="primary"
+                    :size="50"
+                    rounded
+                    variant="tonal"
+                  >
+                    <VIcon icon="tabler-calendar-month" />
+                  </VAvatar>
+                </template>
+              </VCardText>
+              <VCardText class="pb-2">
+                <h4>{{ year.name }}</h4>
+                <p>{{ year.description }}</p>
+              </VCardText>
+              <VCardText>
+                <VBtn
+                  class=""
                   variant="tonal"
                 >
-                  <VIcon icon="tabler-calendar-month" />
-                </VAvatar>
-              </template>
-            </VCardText>
-            <VCardText class="pb-2">
-              <h4>{{ year.name }}</h4>
-              <p>{{ year.description }}</p>
-            </VCardText>
-            <VCardText>
-              <VBtn
-                class=""
-                variant="tonal"
-              >
-                View Courses
-              </VBtn>
-            </VCardText>
-          </VCard>
+                  View Courses
+                </VBtn>
+              </VCardText>
+            </VCard>
+          </VCol>
+        </template>
+      </template>
+      <template v-else>
+        <VCol
+          cols="12"
+          md="12"
+        >
+          <VAlert
+            color="primary"
+            variant="tonal"
+          >
+            There are no academic years set!
+          </VAlert>
         </VCol>
       </template>
     </VRow>

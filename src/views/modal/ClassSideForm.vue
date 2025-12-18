@@ -30,20 +30,17 @@ const status = ref([
   { title: 'Inactive', value: 'inactive' },
 ])
 
-console.log(props.classData)
-
 const classFields = ref({
   title: props.classData?.title || '',
   scheduled_at: props.classData?.scheduled_at || '',
   duration: props.classData?.duration || '',
   description: props.classData?.description || '',
-  department_id: props.classData?.department_id || '',
   academic_year_id: props.classData?.academic_year_id || '',
   course_id: props.classData?.course_id || '',
   instructor_id: props.classData?.instructor_id || undefined,
   attachments: props.classData?.attachments || [],
   link: props.classData?.link || '',
-  status: props.classData?.status || '',
+  status: props.classData?.status || 'active',
 })
 
 const errors = ref<Record<string, string | undefined>>({
@@ -69,11 +66,10 @@ watch(() => props.isDrawerOpen, val => {
       scheduled_at: props.classData?.scheduled_at || '',
       title: props.classData?.title || '',
       duration: props.classData?.duration || '',
-      department_id: props.classData?.department_id || '',
       description: props.classData?.description || '',
       academic_year_id: props.classData?.academic_year_id || '',
       instructor_id: props.classData?.instructor_id || undefined,
-      status: props.classData?.status || '',
+      status: props.classData?.status || 'active',
       attachments: props.classData?.attachments || [],
       course_id: props.classData?.course_id || '',
       link: props.classData?.link || '',
@@ -309,22 +305,6 @@ const dialogModelValueUpdate = (val: boolean) => {
                   item-value="id"
                   label="Academic Year"
                   placeholder="Select Academic Year"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-
-              <!-- Departments -->
-              <VCol
-                cols="12"
-                class="py-2"
-              >
-                <AppSelect
-                  v-model="classFields.department_id"
-                  :items="departmentsData"
-                  item-title="name"
-                  item-value="id"
-                  label="Department"
-                  placeholder="Select Department"
                   :rules="[requiredValidator]"
                 />
               </VCol>

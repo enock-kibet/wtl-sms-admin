@@ -2,7 +2,6 @@
 import type { Courses, iCourses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
-import type { iAcademicYear } from '@/data/models/schools'
 import CourseSideForm from '@/views/modal/CourseSideForm.vue'
 
 // 👉 Event
@@ -16,7 +15,7 @@ const isCourseHandlerSidebarActive = ref(false)
 
 const headers = [
   { title: 'Course Title', key: 'name' },
-  { title: 'Lecturer', key: 'lecturer' },
+  { title: 'Lecturers', key: 'lecturer' },
   { title: 'School', key: 'school' },
   { title: 'Department', key: 'department' },
   { title: 'Created At', key: 'created_at' },
@@ -85,7 +84,7 @@ const { data: coursesData, execute: fetchCourses } = await useApi<any>(createUrl
 ))
 
 const courses = computed((): Courses[] => coursesData.value.data)
-const totalCourses = computed(() => coursesData.value.total)
+const totalCourses = computed(() => coursesData.value.meta.total)
 
 const deleteCourse = async (id: string) => {
   await $api(`apps/ecommerce/products/${id}`, {
@@ -154,23 +153,6 @@ const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(c
 ))
 
 const instructors = computed((): Instructors[] => instructorsData.value.data)
-
-const { data: academicYearsData, execute: fetchAcademicYears } = await useApi<any>(createUrl('/academic-year/list',
-  {
-    query: {
-      q: searchQuery,
-      stock: selectedStock,
-      category: selectedCategory,
-      status: selectedStatus,
-      page,
-      itemsPerPage,
-      sortBy,
-      orderBy,
-    },
-  },
-))
-
-const academicYears = computed((): iAcademicYear[] => academicYearsData.value.data)
 </script>
 
 <template>
@@ -309,7 +291,6 @@ const academicYears = computed((): iAcademicYear[] => academicYearsData.value.da
     v-model:course-data="selectedCourse"
     :fetch-courses="fetchCourses"
     :departments-data="departments"
-    :academic-years-data="academicYears"
     :instructors-data="instructors"
   />
 </template>

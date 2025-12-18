@@ -4,7 +4,6 @@ import { VForm } from 'vuetify/components/VForm'
 import type { Courses, iCourses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
-import type { iAcademicYear } from '@/data/models/schools'
 import { submitCourse, updateCourse } from '@/pages/courses/core/request'
 
 const props = defineProps<Props>()
@@ -19,7 +18,6 @@ interface Props {
   coursesData?: Courses[]
   fetchCourses?: () => Promise<void>
   departmentsData?: Departments[]
-  academicYearsData?: iAcademicYear[]
   instructorsData?: Instructors[]
 }
 
@@ -231,22 +229,6 @@ const dialogModelValueUpdate = (val: boolean) => {
                   v-model="courseFields.course_code"
                   label="Course Code"
                   placeholder="Course Code"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-
-              <!-- Academic Year  -->
-              <VCol
-                cols="12"
-                class="py-2"
-              >
-                <AppSelect
-                  v-model="courseFields.academic_year_id"
-                  :items="academicYearsData"
-                  item-title="name"
-                  item-value="id"
-                  label="Academic Year"
-                  placeholder="Select Academic Year"
                   :rules="[requiredValidator]"
                 />
               </VCol>

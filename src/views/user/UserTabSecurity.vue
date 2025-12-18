@@ -55,14 +55,16 @@ const recentDevices = [
       <!-- 👉 Change password -->
       <VCard title="Change Password">
         <VCardText>
-          <VAlert
+          <!--
+            <VAlert
             closable
             variant="tonal"
             color="warning"
             class="mb-4"
             title="Ensure that these requirements are met"
             text="Minimum 8 characters long, uppercase & symbol"
-          />
+            />
+          -->
 
           <VForm @submit.prevent="() => { }">
             <VRow>

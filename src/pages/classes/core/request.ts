@@ -21,14 +21,15 @@ export const submitClass = async (
       },
       body: classData,
       onResponseError({ response }) {
-        if (response._data?.errors)
+        if (response._data?.errors) {
           errors.value = response._data.errors
+          showToast(response._data.message, 'error')
+        }
       },
     })
   }
   catch (e) {
     console.error(e)
-    showToast('An error occurred while submitting the class data.', 'error')
 
     return null
   }

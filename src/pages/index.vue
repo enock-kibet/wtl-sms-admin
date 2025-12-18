@@ -86,7 +86,22 @@ const statisticsHorizontal = [
             cols="12"
             md="9"
           >
-            <AttendanceGraph :data="graphStats" v-model:is-drawer-open="isAYHandlerSidebarActive" />
+            <template v-if="graphStats.length > 0">
+              <AttendanceGraph :data="graphStats" v-model:is-drawer-open="isAYHandlerSidebarActive" />
+            </template>
+            <template v-else>
+            <VCol
+              cols="12"
+              md="12"
+            >
+              <VAlert
+                color="primary"
+                variant="tonal"
+              >
+                You do not have any stats at the moment, check again later!
+              </VAlert>
+            </VCol>
+          </template>
           </VCol>
           <VCol
             cols="12"
