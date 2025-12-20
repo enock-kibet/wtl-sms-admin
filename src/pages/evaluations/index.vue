@@ -83,13 +83,13 @@ const setNavKey = (key: string) => {
               >
                 <VCardText class="d-flex align-center justify-space-between">
                   <div>
-                    <div class="text-subtitle-1">
-                      {{ statistics.start_date }} - {{ statistics.end_date }}
-                    </div>
                     <div class="d-flex align-center flex-wrap">
                       <h5 class="text-h5">
                         {{ statistics.name }}
                       </h5>
+                    </div>
+                    <div class="text-subtitle-1">
+                      {{ statistics.start_date }} - {{ statistics.end_date }}
                     </div>
                   </div>
 

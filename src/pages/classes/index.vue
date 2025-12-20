@@ -18,6 +18,7 @@ const headers = [
   { title: 'Class Title', key: 'title' },
   { title: 'Lecturer', key: 'lecturer' },
   { title: 'Course', key: 'course' },
+  { title: 'Students', key: 'students' },
 
   // { title: 'School', key: 'school' },
   // { title: 'Department', key: 'department' },

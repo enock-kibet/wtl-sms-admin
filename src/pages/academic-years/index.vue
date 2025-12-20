@@ -47,8 +47,6 @@ const selectedYear = ref<iAcademicYear>({
   id: undefined,
   name: '',
   description: '',
-  start_date: '',
-  end_date: '',
   status: '',
 })
 
@@ -99,8 +97,6 @@ const addAcademicYear = () => {
     name: '',
     icon: null,
     description: '',
-    start_date: '',
-    end_date: '',
     status: '',
   }
   isSchoolHandlerSidebarActive.value = true

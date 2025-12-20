@@ -4,6 +4,7 @@
 import type { Courses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
+import type { iAcademicYear } from '@/data/models/schools'
 import type { Student, iStudent } from '@/data/models/students'
 import StudentSideForm from '@/views/modal/StudentSideForm.vue'
 
@@ -62,7 +63,24 @@ const { data: studentsData, execute: fetchStudents } = await useApi<any>(createU
 ))
 
 const students = computed((): Student[] => studentsData.value.data)
-const totalStudents = computed(() => studentsData.value.total)
+const totalStudents = computed(() => studentsData.value.meta.total)
+
+const { data: academicYearsData, execute: fetchAcademicYears } = await useApi<any>(createUrl('/academic-year/list',
+  {
+    query: {
+      q: searchQuery,
+      stock: selectedStock,
+      category: selectedCategory,
+      status: selectedStatus,
+      page,
+      itemsPerPage,
+      sortBy,
+      orderBy,
+    },
+  },
+))
+
+const academicYears = computed((): iAcademicYear[] => academicYearsData.value.data)
 
 const deleteStudent = async (id: string) => {
   await $api(`apps/ecommerce/products/${id}`, {
@@ -149,10 +167,11 @@ const roles = computed((): RolesData => rolesData.value.data)
 
 const headers = [
   { title: 'Student Name', key: 'name' },
-  { title: 'Role', key: 'roles' },
+  { title: 'Acadenic Year', key: 'academic_year' },
   { title: 'School', key: 'school' },
   { title: 'Department', key: 'department' },
   { title: 'Grades', key: 'grades' },
+  { title: 'Role', key: 'roles' },
   { title: 'Status', key: 'status' },
   { title: 'Fails', key: 'fails' },
   { title: 'Actions', key: 'actions', sortable: false },
@@ -362,6 +381,7 @@ watch(bulkactions, val => {
     :fetch-students="fetchStudents"
     :departments-data="departments"
     :course-data="courses"
+    :academic-years-data="academicYears"
     :instructors-data="instructors"
   />
 </template>

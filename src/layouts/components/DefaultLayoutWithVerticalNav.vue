@@ -54,6 +54,5 @@ import { VerticalNavLayout } from '@layouts'
     </template>
 
     <!-- 👉 Customizer -->
-    <!-- <TheCustomizer /> -->
   </VerticalNavLayout>
 </template>

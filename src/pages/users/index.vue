@@ -63,36 +63,40 @@ const setNavKey = (key: string) => {
         cols="12"
         md="12"
       >
-        <VTabs
-          v-model="currentTab"
-          class="v-tabs-pill"
-        >
-          <VTab value="students">
+        <div class="d-flex gap-3">
+          <VBtn
+            :color="navKey === 'students' ? 'primary' : 'default'"
+            @click="setNavKey('students')"
+          >
             Students
-          </VTab>
-          <VTab value="lecturers">
+          </VBtn>
+          <VBtn
+            :color="navKey === 'lecturers' ? 'primary' : 'default'"
+            @click="setNavKey('lecturers')"
+          >
             Lecturers
-          </VTab>
-          <VTab value="admins">
+          </VBtn>
+          <VBtn
+            :color="navKey === 'admins' ? 'primary' : 'default'"
+            @click="setNavKey('admins')"
+          >
             Administrators
-          </VTab>
-        </VTabs>
+          </VBtn>
+        </div>
         <VRow>
           <VCol
             cols="12"
             class="mt-8"
           >
-            <VWindow v-model="currentTab">
-              <VWindowItem value="students">
-                <Students />
-              </VWindowItem>
-              <VWindowItem value="lecturers">
-                <Instructor />
-              </VWindowItem>
-              <VWindowItem value="admins">
-                <Instructor />
-              </VWindowItem>
-            </VWindow>
+            <template v-if="navKey === 'students'">
+              <Students />
+            </template>
+            <template v-if="navKey === 'lecturers'">
+              <Instructor />
+            </template>
+            <template v-if="navKey === 'admins'">
+              <Instructor />
+            </template>
           </VCol>
         </VRow>
       </VCol>

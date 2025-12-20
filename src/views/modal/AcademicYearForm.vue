@@ -25,9 +25,7 @@ const status = ref([
 const yearFields = ref({
   name: props.yearData?.name || '',
   description: props.yearData?.description || '',
-  start_date: props.yearData?.start_date || '',
   icon: null,
-  end_date: props.yearData?.end_date || '',
   status: props.yearData?.status || 'active',
 })
 
@@ -48,9 +46,7 @@ watch(() => props.isDrawerOpen, val => {
     yearFields.value = {
       name: props.yearData?.name || '',
       description: props.yearData?.description || '',
-      start_date: props.yearData?.start_date || '',
       icon: null,
-      end_date: props.yearData?.end_date || '',
       status: props.yearData?.status || 'active',
     }
   }
@@ -65,8 +61,6 @@ const handleSubmit = () => {
 
     formData.append('name', yearFields.value.name)
     formData.append('description', yearFields.value.description)
-    formData.append('start_date', yearFields.value.start_date)
-    formData.append('end_date', yearFields.value.end_date)
     formData.append('status', yearFields.value.status)
     if (yearFields.value.icon)
       formData.append('icon', yearFields.value.icon)
@@ -96,8 +90,6 @@ const handleUpdate = () => {
 
     data.append('name', yearFields.value.name)
     data.append('description', yearFields.value.description)
-    data.append('start_date', yearFields.value.start_date)
-    data.append('end_date', yearFields.value.end_date)
     data.append('status', yearFields.value.status)
 
     if (yearFields.value.icon)
@@ -200,26 +192,6 @@ const dialogModelValueUpdate = (val: boolean) => {
                   label="Description"
                   rows="2"
                   placeholder="Description of the academic year"
-                />
-              </VCol>
-
-              <!-- 👉 Start Date -->
-              <VCol cols="12">
-                <AppDateTimePicker
-                  v-model="yearFields.start_date"
-                  label="Start Date"
-                  placeholder="Select start date"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-
-              <!-- 👉 End Date -->
-              <VCol cols="12">
-                <AppDateTimePicker
-                  v-model="yearFields.end_date"
-                  label="End Date"
-                  placeholder="Select end date"
-                  :rules="[requiredValidator]"
                 />
               </VCol>
 

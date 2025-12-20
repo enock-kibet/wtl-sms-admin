@@ -36,6 +36,7 @@ const studentFields = ref({
   phone: props.studentData?.phone || '',
   email: props.studentData?.email || '',
   reg_no: props.studentData?.reg_no || '',
+  academic_year_id: props.studentData?.academic_year_id || undefined,
   department_id: props.studentData?.department_id || '',
   course_ids: props.studentData?.course_ids || undefined,
   status: props.studentData?.status || 'active',
@@ -65,6 +66,7 @@ watch(() => props.isDrawerOpen, val => {
       email: props.studentData?.email || '',
       reg_no: props.studentData?.reg_no || '',
       department_id: props.studentData?.department_id || '',
+      academic_year_id: props.studentData?.academic_year_id || undefined,
       course_ids: props.studentData?.course_ids || undefined,
       status: props.studentData?.status || 'active',
       fails: props.studentData?.fails || '',
@@ -254,6 +256,19 @@ const dialogModelValueUpdate = (val: boolean) => {
                   multiple
                   closable-chips
                   placeholder="Select Course"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- Academic Year  -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="studentFields.academic_year_id"
+                  :items="academicYearsData"
+                  item-title="name"
+                  item-value="id"
+                  label="Academic Year"
+                  placeholder="Select Academic Year"
                   :rules="[requiredValidator]"
                 />
               </VCol>

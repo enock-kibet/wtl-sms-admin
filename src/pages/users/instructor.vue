@@ -56,7 +56,7 @@ const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(c
 ))
 
 const instructors = computed((): Instructors[] => instructorsData.value.data)
-const totalInstructors = computed(() => instructorsData.value.total)
+const totalInstructors = computed(() => instructorsData.value.meta.total)
 
 const { data: rolesData, execute: fetchRoles } = await useApi<any>(createUrl('/administrator/roles-data',
   {
