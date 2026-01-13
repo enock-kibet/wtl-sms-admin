@@ -31,7 +31,7 @@ const statisticsHorizontal = [
     stats: `${stats.value?.attendances}` || '0',
   },
   {
-    title: 'Graduates List',
+    title: 'Class List',
     color: 'warning',
     icon: 'tabler-school',
     stats: `${stats.value?.graduates}` || '0',

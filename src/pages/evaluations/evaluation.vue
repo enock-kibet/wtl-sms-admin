@@ -184,7 +184,7 @@ const statisticsHorizontal = [
     stats: '50',
   },
   {
-    title: 'Graduates List',
+    title: 'Class List',
     color: 'warning',
     icon: 'tabler-user-exclamation',
     stats: '200',

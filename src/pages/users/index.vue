@@ -22,7 +22,7 @@ const statisticsHorizontal = [
     isHover: false,
   },
   {
-    title: 'Graduates List',
+    title: 'Class List',
     color: 'warning',
     icon: 'tabler-user-exclamation',
     stats: '200',
