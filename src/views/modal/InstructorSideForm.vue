@@ -3,6 +3,7 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors, iInstructors } from '@/data/models/instructors'
+import type { Schools } from '@/data/models/schools'
 import { submitInstructor, updateInstructor } from '@/pages/attendance-reports/core/request'
 
 const props = defineProps<Props>()
@@ -17,11 +18,20 @@ interface Props {
   instructorsData?: Instructors[]
   fetchInstructors?: () => Promise<void>
   departmentsData?: Departments[]
+  schoolsData?: Schools[]
 }
 
 const status = ref([
   { title: 'Active', value: 'active' },
   { title: 'Inactive', value: 'inactive' },
+])
+
+const employmentTypes = ref([
+  { title: 'Internal Full-Time', value: 'internal_full_time' },
+  { title: 'External Full-Time', value: 'external_full_time' },
+  { title: 'Internal Part-Time', value: 'internal_part_time' },
+  { title: 'External Part-Time', value: 'external_part_time' },
+  { title: 'Adjunct Part-Time', value: 'adjunct_part_time' },
 ])
 
 const instructorFields = ref({
@@ -30,9 +40,12 @@ const instructorFields = ref({
   last_name: props.instructorData?.last_name || '',
   phone: props.instructorData?.phone || '',
   pf_number: props.instructorData?.pf_number || '',
+  employment_type: props.instructorData?.employment_type || '',
   email: props.instructorData?.email || '',
+  faculty_id: props.instructorData?.faculty_id || '',
   department_id: props.instructorData?.department_id || '',
   status: props.instructorData?.status || '',
+  sendActivationLink: false,
 })
 
 const errors = ref<Record<string, string | undefined>>({
@@ -58,9 +71,12 @@ watch(() => props.isDrawerOpen, val => {
       last_name: props.instructorData?.last_name || '',
       phone: props.instructorData?.phone || '',
       pf_number: props.instructorData?.pf_number || '',
+      employment_type: props.instructorData?.employment_type || '',
       email: props.instructorData?.email || '',
+      faculty_id: props.instructorData?.faculty_id || '',
       department_id: props.instructorData?.department_id || '',
       status: props.instructorData?.status || '',
+      sendActivationLink: false,
     }
   }
   else {
@@ -237,6 +253,32 @@ const dialogModelValueUpdate = (val: boolean) => {
                 />
               </VCol>
 
+              <!-- Employment Type -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="instructorFields.employment_type"
+                  :items="employmentTypes"
+                  item-title="title"
+                  item-value="value"
+                  label="Employment Type"
+                  placeholder="Select Employment Type"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- Schools -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="instructorFields.faculty_id"
+                  :items="schoolsData"
+                  item-title="name"
+                  item-value="id"
+                  label="School"
+                  placeholder="Select School"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
               <!-- Departments -->
               <VCol cols="12">
                 <AppSelect
@@ -261,6 +303,22 @@ const dialogModelValueUpdate = (val: boolean) => {
                   placeholder="Select Status"
                   :rules="[requiredValidator]"
                 />
+              </VCol>
+
+              <VCol cols="12">
+                <div class="d-flex align-center">
+                  <VCheckbox
+                    id="activationLink"
+                    v-model="instructorFields.sendActivationLink"
+                    inline
+                  />
+                  <VLabel
+                    for="privacy-policy"
+                    style="opacity: 1;"
+                  >
+                    <span class="me-1 text-high-emphasis">Send password reset to email?</span>
+                  </VLabel>
+                </div>
               </VCol>
 
               <!-- 👉 Form buttons -->

@@ -1,32 +1,9 @@
 <script setup lang="ts">
-import type { Classes, iClasses } from '@/data/models/classes'
 import type { Courses } from '@/data/models/courses'
-import type { Instructors } from '@/data/models/instructors'
-import type { iAcademicYear } from '@/data/models/schools'
-import type { Topic } from '@/data/models/topics'
-import ClassSideForm from '@/views/modal/ClassSideForm.vue'
+import type { Topic, iTopic } from '@/data/models/topics'
+import TopicSideForm from '@/views/modal/TopicSideForm.vue'
 
-// 👉 Event
-// const event = ref(structuredClone(blankEvent))
-const isClassHandlerSidebarActive = ref(false)
-
-// watch(isEventHandlerSidebarActive, val => {
-//   if (!val)
-//     event.value = structuredClone(blankEvent)
-// })
-
-const headers = [
-  { title: 'Topic', key: 'topic' },
-  { title: 'Lecturer', key: 'lecturer' },
-  { title: 'Course', key: 'course' },
-  { title: 'Students', key: 'students' },
-
-  { title: 'School', key: 'school' },
-
-  // { title: 'Department', key: 'department' },
-  { title: 'Starts At', key: 'scheduled_at' },
-  { title: 'Actions', key: 'actions', sortable: false },
-]
+const isTopicHandlerSidebarActive = ref(false)
 
 const selectedStatus = ref()
 const selectedCategory = ref()
@@ -34,56 +11,22 @@ const selectedStock = ref<boolean | undefined>()
 const searchQuery = ref('')
 const selectedRows = ref([])
 
-const status = ref([
-  { title: 'Active', value: 'active' },
-  { title: 'Inactive', value: 'Inactive' },
-])
-
 // Data table options
 const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 
-const courseID = ref()
-const semester = ref()
-
-// Update data table options
-const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
-
-const selectedClass = ref<iClasses>({
+const selectedTopic = ref<iTopic>({
   id: undefined,
-  course_id: '',
-  title: '',
-  department_id: '',
-  description: '',
-  instructor_id: '',
-  scheduled_at: '',
-  duration: '',
-  status: '',
-  attachments: [],
-  course_code: '',
+  course_id: undefined,
+  semester: undefined,
+  title: undefined,
+  description: undefined,
+  status: undefined,
 })
 
-const resolveStatus = (statusMsg: string) => {
-  if (statusMsg === 'active')
-    return { text: 'Active', color: 'success' }
-  if (statusMsg === 'ongoing')
-    return { text: 'Ongoing', color: 'success' }
-  if (statusMsg === 'upcoming')
-    return { text: 'Upcoming', color: 'success' }
-  if (statusMsg === 'past')
-    return { text: 'Past', color: 'warning' }
-  if (statusMsg === 'inactive')
-    return { text: 'Inactive', color: 'error' }
-
-  return { text: statusMsg, color: 'default' }
-}
-
-const { data: classesData, execute: fetchClasses } = await useApi<any>(createUrl('/class/list',
+const { data: topicsData, execute: fetchTopics } = await useApi<any>(createUrl('/administrator/topics',
   {
     query: {
       q: searchQuery,
@@ -98,10 +41,10 @@ const { data: classesData, execute: fetchClasses } = await useApi<any>(createUrl
   },
 ))
 
-const classes = computed((): Classes[] => classesData.value.data)
-const totalClasses = computed(() => classesData.value.total)
+const topics = computed((): Topic[] => topicsData.value.data)
+const totalTopics = computed(() => topicsData.value.total)
 
-const deleteClass = async (id: string) => {
+const deleteTopic = async (id: string) => {
   await $api(`apps/ecommerce/products/${id}`, {
     method: 'DELETE',
   })
@@ -112,31 +55,27 @@ const deleteClass = async (id: string) => {
     selectedRows.value.splice(index, 1)
 
   // Refetch products
-  fetchClasses()
+  fetchTopics()
 }
 
-const addClass = () => {
-  selectedClass.value = {
+const addTopic = () => {
+  selectedTopic.value = {
     id: undefined,
-    scheduled_at: '',
-    duration: '',
-    title: '',
-    description: '',
-    academic_year_id: '',
-    instructor_id: '',
-    status: 'active',
-    attachments: [],
-    course_code: '',
+    course_id: undefined,
+    semester: undefined,
+    title: undefined,
+    description: undefined,
+    status: undefined,
   }
-  isClassHandlerSidebarActive.value = true
+  isTopicHandlerSidebarActive.value = true
 }
 
-const editClass = (iclasses: iClasses) => {
-  selectedClass.value = iclasses
-  isClassHandlerSidebarActive.value = true
+const editTopic = (topic: iTopic) => {
+  selectedTopic.value = topic
+  isTopicHandlerSidebarActive.value = true
 }
 
-const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(createUrl('/administrator/instructors',
+const { data: coursesData } = await useApi<any>(createUrl('/course/list',
   {
     query: {
       q: searchQuery,
@@ -151,35 +90,33 @@ const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(c
   },
 ))
 
-const instructors = computed((): Instructors[] => instructorsData.value.data)
-
-const { data: academicYearsData, execute: fetchAcademicYears } = await useApi<any>(createUrl('/academic-year/list',
-  {
-    query: {
-      sortBy,
-      orderBy,
-    },
-  },
-))
-
-const academicYears = computed((): iAcademicYear[] => academicYearsData.value.data)
-
-const { data: coursesData, execute: fetchCourses } = await useApi<any>(createUrl('/course/list'))
-
-const { data: topicsData, execute: fetchTopics } = await useApi<any>(createUrl('/administrator/topics',
-  {
-    query: {
-      courseID,
-      semester,
-      sortBy,
-      orderBy,
-    },
-  },
-))
-
-const topics = computed((): Topic[] => topicsData.value.data)
-
 const courses = computed((): Courses[] => coursesData.value.data)
+
+const headers = [
+  { title: 'Course', key: 'course' },
+  { title: 'Semester', key: 'semester' },
+  { title: 'Title', key: 'title' },
+  { title: 'Description', key: 'description' },
+  { title: 'Status', key: 'status' },
+
+  // { title: 'Fails', key: 'fails' },
+  { title: 'Actions', key: 'actions', sortable: false },
+]
+
+// Update data table options
+const updateOptions = (options: any) => {
+  sortBy.value = options.sortBy[0]?.key
+  orderBy.value = options.sortBy[0]?.order
+}
+
+const resolveStatus = (statusMsg: string) => {
+  if (statusMsg === 'active')
+    return { text: 'Active', color: 'success' }
+  if (statusMsg === 'inactive')
+    return { text: 'Inactive', color: 'error' }
+
+  return { text: statusMsg, color: 'default' }
+}
 </script>
 
 <template>
@@ -190,7 +127,7 @@ const courses = computed((): Courses[] => coursesData.value.data)
         md="12"
       >
         <VCard
-          title="Filter Classes"
+          title="Filter Topics"
           class="mb-6"
         >
           <VDivider />
@@ -200,7 +137,7 @@ const courses = computed((): Courses[] => coursesData.value.data)
               <!-- 👉 Search  -->
               <AppTextField
                 v-model="searchQuery"
-                placeholder="Search Class"
+                placeholder="Search Topic"
                 style="inline-size: 200px;"
                 class="me-3"
               />
@@ -224,9 +161,9 @@ const courses = computed((): Courses[] => coursesData.value.data)
               <VBtn
                 color="primary"
                 prepend-icon="tabler-plus"
-                @click="addClass"
+                @click="addTopic"
               >
-                Add Class
+                Add Topic
               </VBtn>
             </div>
           </div>
@@ -240,11 +177,19 @@ const courses = computed((): Courses[] => coursesData.value.data)
             v-model:page="page"
             :headers="headers"
             show-select
-            :items="classes"
-            :items-length="totalClasses"
+            :items="topics"
+            :items-length="totalTopics"
             class="text-no-wrap"
             @update:options="updateOptions"
           >
+            <!-- description -->
+            <template #item.description="{ item }">
+              <div>
+                <!-- eslint-disable-next-line vue/no-v-html -->
+                <span v-html="item.description" />
+              </div>
+            </template>
+
             <!-- status -->
             <template #item.status="{ item }">
               <VChip
@@ -257,7 +202,7 @@ const courses = computed((): Courses[] => coursesData.value.data)
 
             <!-- Actions -->
             <template #item.actions="{ item }">
-              <IconBtn @click="editClass(item)">
+              <IconBtn @click="editTopic(item)">
                 <VIcon icon="tabler-edit" />
               </IconBtn>
 
@@ -275,7 +220,7 @@ const courses = computed((): Courses[] => coursesData.value.data)
                     <VListItem
                       value="delete"
                       prepend-icon="tabler-trash"
-                      @click="deleteClass(item.id)"
+                      @click="deleteTopic(item.id)"
                     >
                       Delete
                     </VListItem>
@@ -296,7 +241,7 @@ const courses = computed((): Courses[] => coursesData.value.data)
               <TablePagination
                 v-model:page="page"
                 :items-per-page="itemsPerPage"
-                :total-items="totalClasses"
+                :total-items="totalTopics"
               />
             </template>
           </VDataTableServer>
@@ -304,16 +249,10 @@ const courses = computed((): Courses[] => coursesData.value.data)
       </VCol>
     </VRow>
   </div>
-  <ClassSideForm
-    v-model:is-drawer-open="isClassHandlerSidebarActive"
-    v-model:class-data="selectedClass"
-    v-model:topics-data="topics"
-    v-model:course-id="courseID"
-    v-model:semester="semester"
-    :fetch-classes="fetchClasses"
-    :academic-years-data="academicYears"
-    :instructor-data="instructors"
-    :courses-data="courses"
+  <TopicSideForm
+    v-model:is-drawer-open="isTopicHandlerSidebarActive"
+    v-model:topic-data="selectedTopic"
     :fetch-topics="fetchTopics"
+    :courses-data="courses"
   />
 </template>

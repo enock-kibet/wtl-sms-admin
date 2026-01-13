@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Departments } from '@/data/models/departments'
 import type { Instructors, iInstructors } from '@/data/models/instructors'
+import type { Schools } from '@/data/models/schools'
 import InstructorSideForm from '@/views/modal/InstructorSideForm.vue'
 
 interface RolesData {
@@ -101,29 +102,22 @@ const editInstructor = (instructor: iInstructors) => {
   isInstructorHandlerSidebarActive.value = true
 }
 
-const { data: departmentsData, execute: fetchDepartments } = await useApi<any>(createUrl('/department/list',
-  {
-    query: {
-      q: searchQuery,
-      stock: selectedStock,
-      category: selectedCategory,
-      status: selectedStatus,
-      page,
-      itemsPerPage,
-      sortBy,
-      orderBy,
-    },
-  },
-))
+const { data: departmentsData, execute: fetchDepartments } = await useApi<any>(createUrl('/department/list'))
 
 const departments = computed((): Departments[] => departmentsData.value.data)
 
+const { data: schoolsData, execute: fetchSchools } = await useApi<any>(createUrl('/faculty/list'))
+
+const schools = computed((): Schools[] => schoolsData.value.data)
+
 const headers = [
   { title: 'Lecturer', key: 'name' },
-  { title: 'Role', key: 'roles' },
+  { title: 'Employment Type', key: 'employment_type' },
   { title: 'Classes Teaching', key: 'classes_teaching' },
+  { title: 'School', key: 'school' },
   { title: 'Department', key: 'department' },
   { title: 'Attendance', key: 'attendance' },
+  { title: 'Role', key: 'roles' },
   { title: 'Status', key: 'status' },
   { title: 'Actions', key: 'actions', sortable: false },
 ]
@@ -146,6 +140,21 @@ const resolveStatus = (statusMsg: string) => {
     return { text: 'Inactive', color: 'error' }
 
   return { text: statusMsg, color: 'default' }
+}
+
+const resolveEmploymentType = (type: string) => {
+  if (type === 'internal_full_time')
+    return { text: 'Internal Full-Time', color: 'primary' }
+  if (type === 'external_full_time')
+    return { text: 'External Full-Time', color: 'primary' }
+  if (type === 'internal_part_time')
+    return { text: 'External Full-Time', color: 'primary' }
+  if (type === 'external_part_time')
+    return { text: 'External Part-Time', color: 'primary' }
+  if (type === 'adjunct_part_time')
+    return { text: 'Adjunct Part-Time', color: 'primary' }
+
+  return { text: type, color: 'default' }
 }
 
 const roleChange = async (id: any) => {
@@ -265,6 +274,18 @@ watch(bulkactions, val => {
                 </VChip>
               </div>
             </template>
+
+            <template #item.employment_type="{ item }">
+              <div>
+                <VChip
+                  v-bind="resolveEmploymentType(item.employment_type)"
+                  density="default"
+                  label
+                  size="small"
+                />
+              </div>
+            </template>
+
             <!-- status -->
             <template #item.status="{ item }">
               <VChip
@@ -329,6 +350,7 @@ watch(bulkactions, val => {
     v-model:instructor-data="selectedInstructor"
     :fetch-instructors="fetchInstructors"
     :departments-data="departments"
+    :schools-data="schools"
     :instructors-data="instructors"
   />
 </template>

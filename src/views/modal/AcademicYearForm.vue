@@ -25,6 +25,8 @@ const status = ref([
 const yearFields = ref({
   name: props.yearData?.name || '',
   description: props.yearData?.description || '',
+  start_date: props.yearData?.start_date || '',
+  end_date: props.yearData?.end_date || '',
   icon: null,
   status: props.yearData?.status || 'active',
 })
@@ -32,6 +34,8 @@ const yearFields = ref({
 const errors = ref<Record<string, string | undefined>>({
   name: undefined,
   description: undefined,
+  year_of_admission: undefined,
+  estimated_exit: undefined,
   icon: undefined,
   start_date: undefined,
   end_date: undefined,
@@ -46,6 +50,8 @@ watch(() => props.isDrawerOpen, val => {
     yearFields.value = {
       name: props.yearData?.name || '',
       description: props.yearData?.description || '',
+      start_date: props.yearData?.start_date || '',
+      end_date: props.yearData?.end_date || '',
       icon: null,
       status: props.yearData?.status || 'active',
     }
@@ -61,6 +67,8 @@ const handleSubmit = () => {
 
     formData.append('name', yearFields.value.name)
     formData.append('description', yearFields.value.description)
+    formData.append('start_date', yearFields.value.start_date)
+    formData.append('end_date', yearFields.value.end_date)
     formData.append('status', yearFields.value.status)
     if (yearFields.value.icon)
       formData.append('icon', yearFields.value.icon)
@@ -192,6 +200,26 @@ const dialogModelValueUpdate = (val: boolean) => {
                   label="Description"
                   rows="2"
                   placeholder="Description of the academic year"
+                />
+              </VCol>
+
+              <!-- 👉 Start Date -->
+              <VCol cols="12">
+                <AppDateTimePicker
+                  v-model="yearFields.start_date"
+                  label="Year of Admission"
+                  placeholder="Select Year of Admission"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- 👉 End Date -->
+              <VCol cols="12">
+                <AppDateTimePicker
+                  v-model="yearFields.end_date"
+                  label="Estimated Exit"
+                  placeholder="Select Estimated Exit"
+                  :rules="[requiredValidator]"
                 />
               </VCol>
 

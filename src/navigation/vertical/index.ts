@@ -22,8 +22,17 @@ export default [
   },
   {
     title: 'Courses',
-    to: { name: 'courses' },
     icon: { icon: 'tabler-vocabulary' },
+    children: [
+      {
+        title: 'Courses',
+        to: { name: 'courses' },
+      },
+      {
+        title: 'Topics',
+        to: { name: 'courses-topics' },
+      },
+    ],
   },
   {
     title: 'Classes',

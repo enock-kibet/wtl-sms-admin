@@ -3,10 +3,12 @@ export interface Instructors {
   name: string
   first_name?: string
   last_name?: string
+  school_id?: string
   department_id?: string
   faculty: string
   faculty_id?: string
   attendance: string
+  employment_type: string
   roles?: []
   title: string
   pf_number: string
@@ -23,6 +25,8 @@ export interface iInstructors {
   pf_number?: string
   title?: string
   email?: string
+  employment_type?: string
+  faculty_id?: string
   department_id?: string
   attendance?: string
   academic_year?: string

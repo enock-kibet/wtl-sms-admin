@@ -6,12 +6,15 @@ import type { Courses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
 import type { iAcademicYear } from '@/data/models/schools'
+import type { Topic } from '@/data/models/topics'
 import { submitClass, updateClass } from '@/pages/classes/core/request'
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'update:isDrawerOpen', val: boolean): void
+  (e: 'update:courseId', val: string): void
+  (e: 'update:semester', val: string): void
 }>()
 
 interface Props {
@@ -23,6 +26,10 @@ interface Props {
   academicYearsData?: iAcademicYear[]
   instructorData?: Instructors[]
   coursesData?: Courses[]
+  topicsData?: Topic[]
+  fetchTopics?: () => Promise<void>
+  courseId?: string
+  semester?: string
 }
 
 const status = ref([
@@ -30,14 +37,29 @@ const status = ref([
   { title: 'Inactive', value: 'inactive' },
 ])
 
+const semesters = [
+  { title: 'First Semester', value: 1 },
+  { title: 'Second Semester', value: 2 },
+  { title: 'Third Semester', value: 3 },
+]
+
+const employmentTypes = ref([
+  { title: 'Internal Full-Time', value: 'internal_full_time' },
+  { title: 'External Full-Time', value: 'external_full_time' },
+  { title: 'Internal Part-Time', value: 'internal_part_time' },
+  { title: 'External Part-Time', value: 'external_part_time' },
+  { title: 'Adjunct Part-Time', value: 'adjunct_part_time' },
+])
+
 const classFields = ref({
-  title: props.classData?.title || '',
+  topic_id: props.classData?.topic_id || undefined,
+  semester: props.classData?.semester || undefined,
   scheduled_at: props.classData?.scheduled_at || '',
   duration: props.classData?.duration || '',
   description: props.classData?.description || '',
-  academic_year_id: props.classData?.academic_year_id || '',
-  course_id: props.classData?.course_id || '',
+  course_id: props.classData?.course_id || undefined,
   instructor_id: props.classData?.instructor_id || undefined,
+  inst_employment_type: props.classData?.inst_employment_type || undefined,
   attachments: props.classData?.attachments || [],
   link: props.classData?.link || '',
   status: props.classData?.status || 'active',
@@ -47,11 +69,12 @@ const errors = ref<Record<string, string | undefined>>({
   scheduled_at: undefined,
   duration: undefined,
   course_id: undefined,
-  title: undefined,
+  topic_id: undefined,
   department_id: undefined,
   description: undefined,
   academic_year_id: undefined,
   instructor: undefined,
+  inst_employment_type: undefined,
   status: undefined,
   attachments: undefined,
   link: undefined,
@@ -64,18 +87,26 @@ watch(() => props.isDrawerOpen, val => {
     // Reset form fields when drawer is opened
     classFields.value = {
       scheduled_at: props.classData?.scheduled_at || '',
-      title: props.classData?.title || '',
+      topic_id: props.classData?.topic_id || undefined,
+      semester: props.classData?.semester || undefined,
       duration: props.classData?.duration || '',
       description: props.classData?.description || '',
-      academic_year_id: props.classData?.academic_year_id || '',
+      inst_employment_type: props.classData?.inst_employment_type || '',
       instructor_id: props.classData?.instructor_id || undefined,
       status: props.classData?.status || 'active',
       attachments: props.classData?.attachments || [],
-      course_id: props.classData?.course_id || '',
+      course_id: props.classData?.course_id || undefined,
       link: props.classData?.link || '',
     }
   }
   console.log(props.classData?.scheduled_at)
+})
+
+watch(() => classFields.value.course_id, async val => {
+  if (val) {
+    emit('update:courseId', val)
+    props.fetchTopics && await props.fetchTopics()
+  }
 })
 
 const handleSubmit = () => {
@@ -85,18 +116,19 @@ const handleSubmit = () => {
 
     const data = new FormData()
 
-    data.append('title', classFields.value.title)
+    data.append('topic_id', classFields.value.topic_id ?? '')
     data.append('scheduled_at', classFields.value.scheduled_at)
     data.append('duration', classFields.value.duration)
     data.append('description', classFields.value.description)
-    data.append('department_id', classFields.value.department_id)
-    data.append('academic_year_id', classFields.value.academic_year_id)
-    data.append('course_id', classFields.value.course_id)
+    data.append('semester', classFields.value.semester ?? '')
+    data.append('course_id', classFields.value.course_id ?? '')
     data.append('link', classFields.value.link)
     data.append('status', classFields.value.status)
 
-    if (classFields.value.instructor_id)
+    if (classFields.value.instructor_id) {
       data.append('instructor_id', classFields.value.instructor_id)
+      data.append('inst_employment_type', classFields.value.inst_employment_type ?? '')
+    }
 
     if (classFields.value.attachments) {
       classFields.value.attachments.forEach((file: File) => {
@@ -126,17 +158,19 @@ const handleUpdate = () => {
 
     const data = new FormData()
 
-    data.append('title', classFields.value.title)
+    data.append('topic_id', classFields.value.topic_id ?? '')
     data.append('scheduled_at', classFields.value.scheduled_at)
-    data.append('description', classFields.value.description)
     data.append('duration', classFields.value.duration)
-    data.append('department_id', classFields.value.department_id)
-    data.append('academic_year_id', classFields.value.academic_year_id)
-    data.append('course_id', classFields.value.course_id)
+    data.append('description', classFields.value.description)
+    data.append('semester', classFields.value.semester ?? '')
+    data.append('course_id', classFields.value.course_id ?? '')
     data.append('link', classFields.value.link)
     data.append('status', classFields.value.status)
-    if (classFields.value.instructor_id)
+
+    if (classFields.value.instructor_id) {
       data.append('instructor_id', classFields.value.instructor_id)
+      data.append('inst_employment_type', classFields.value.inst_employment_type ?? '')
+    }
 
     if (classFields.value.attachments) {
       classFields.value.attachments.forEach((file: File) => {
@@ -221,15 +255,85 @@ const dialogModelValueUpdate = (val: boolean) => {
             @submit.prevent="submitClassFunc"
           >
             <VRow>
+              <!-- Courses -->
+              <VCol
+                cols="12"
+                class="py-2"
+              >
+                <AppSelect
+                  v-model="classFields.course_id"
+                  :items="coursesData"
+                  item-title="name"
+                  item-value="id"
+                  label="Course"
+                  placeholder="Select Course"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- Semester -->
+              <VCol
+                cols="12"
+                class="py-2"
+              >
+                <AppSelect
+                  v-model="classFields.semester"
+                  :items="semesters"
+                  item-title="title"
+                  item-value="value"
+                  label="Semester"
+                  placeholder="Select Semester"
+                  :rules="[requiredValidator]"
+                  :error-messages="errors.semester"
+                />
+              </VCol>
+
               <!-- 👉 Name -->
               <VCol
                 cols="12"
                 class="py-2"
               >
-                <AppTextField
-                  v-model="classFields.title"
-                  label="Name"
-                  placeholder="Name of the class"
+                <AppAutocomplete
+                  v-model="classFields.topic_id"
+                  :items="topicsData"
+                  item-title="title"
+                  item-value="id"
+                  chips
+                  closable-chips
+                  label="Topic"
+                  placeholder="Select Class Topic"
+                  :rules="[requiredValidator]"
+                  :error-messages="errors.semester"
+                />
+              </VCol>
+
+              <!-- instructor -->
+              <VCol
+                cols="12"
+                class="py-2"
+              >
+                <AppAutocomplete
+                  v-model="classFields.instructor_id"
+                  :items="instructorData"
+                  item-title="name"
+                  item-value="id"
+                  chips
+                  closable-chips
+                  label="Lecturer"
+                  placeholder="Select Lecturer"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- Employment Type -->
+              <VCol cols="12">
+                <AppSelect
+                  v-model="classFields.inst_employment_type"
+                  :items="employmentTypes"
+                  item-title="title"
+                  item-value="value"
+                  label="Lecturer Employment Type"
+                  placeholder="Select Employment Type"
                   :rules="[requiredValidator]"
                 />
               </VCol>
@@ -277,85 +381,37 @@ const dialogModelValueUpdate = (val: boolean) => {
                 />
               </VCol>
 
-              <!-- Courses -->
-              <VCol
-                cols="12"
-                class="py-2"
-              >
-                <AppSelect
-                  v-model="classFields.course_id"
-                  :items="coursesData"
-                  item-title="name"
-                  item-value="id"
-                  label="Course"
-                  placeholder="Select Course"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-
-              <!-- Academic Year  -->
-              <VCol
-                cols="12"
-                class="py-2"
-              >
-                <AppSelect
-                  v-model="classFields.academic_year_id"
-                  :items="academicYearsData"
-                  item-title="name"
-                  item-value="id"
-                  label="Academic Year"
-                  placeholder="Select Academic Year"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-
-              <!-- instructor -->
-              <VCol
-                cols="12"
-                class="py-2"
-              >
-                <AppSelect
-                  v-model="classFields.instructor_id"
-                  :items="instructorData"
-                  item-title="name"
-                  item-value="id"
-                  chips
-                  closable-chips
-                  label="Instructor"
-                  placeholder="Select Instructor"
-                  :rules="[requiredValidator]"
-                />
-              </VCol>
-
               <!-- Attachments -->
-              <VCol
+              <!--
+                <VCol
                 cols="12"
                 class="py-2"
-              >
-                <VFileInput
-                  v-model="classFields.attachments"
-                  multiple
-                  placeholder="Upload attachments"
-                  label="Attachments"
-                  prepend-icon="tabler-paperclip"
                 >
-                  <template #selection="{ fileNames }">
-                    <template
-                      v-for="fileName in fileNames"
-                      :key="fileName"
-                    >
-                      <VChip
-                        label
-                        size="small"
-                        color="primary"
-                        class="me-2"
-                      >
-                        {{ fileName }}
-                      </VChip>
-                    </template>
-                  </template>
+                <VFileInput
+                v-model="classFields.attachments"
+                multiple
+                placeholder="Upload attachments"
+                label="Attachments"
+                prepend-icon="tabler-paperclip"
+                >
+                <template #selection="{ fileNames }">
+                <template
+                v-for="fileName in fileNames"
+                :key="fileName"
+                >
+                <VChip
+                label
+                size="small"
+                color="primary"
+                class="me-2"
+                >
+                {{ fileName }}
+                </VChip>
+                </template>
+                </template>
                 </VFileInput>
-              </VCol>
+                </VCol>
+              -->
 
               <!-- 👉 Description -->
               <VCol

@@ -27,6 +27,7 @@ declare module 'vue-router/auto-routes' {
     'attendance-reports-students': RouteRecordInfo<'attendance-reports-students', '/attendance-reports/students', Record<never, never>, Record<never, never>>,
     'classes': RouteRecordInfo<'classes', '/classes', Record<never, never>, Record<never, never>>,
     'courses': RouteRecordInfo<'courses', '/courses', Record<never, never>, Record<never, never>>,
+    'courses-topics': RouteRecordInfo<'courses-topics', '/courses/topics', Record<never, never>, Record<never, never>>,
     'dashboard': RouteRecordInfo<'dashboard', '/dashboard', Record<never, never>, Record<never, never>>,
     'departments': RouteRecordInfo<'departments', '/departments', Record<never, never>, Record<never, never>>,
     'evaluations': RouteRecordInfo<'evaluations', '/evaluations', Record<never, never>, Record<never, never>>,
