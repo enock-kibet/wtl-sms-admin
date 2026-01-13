@@ -276,8 +276,8 @@ const dialogModelValueUpdate = (val: boolean) => {
                 <VFileInput
                   v-model="courseFields.attachments"
                   multiple
-                  placeholder="Upload attachments"
-                  label="Upload Attachments"
+                  placeholder="Upload Course Outline"
+                  label="Upload Course Outline"
                 >
                   <template #selection="{ fileNames }">
                     <template
