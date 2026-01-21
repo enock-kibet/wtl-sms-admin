@@ -4,6 +4,7 @@ export const submitCourse = async (
 ) => {
   errors.value = {
     course_code: undefined,
+    school_id: undefined,
     name: undefined,
     department_id: undefined,
     description: undefined,

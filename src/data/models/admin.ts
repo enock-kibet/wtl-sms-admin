@@ -3,7 +3,7 @@ export interface DashStats {
   instructors: number
   courses: number
   attendances: number
-  graduates: string
+  class_list: string
   quality_grades: string
   fails: string
 }

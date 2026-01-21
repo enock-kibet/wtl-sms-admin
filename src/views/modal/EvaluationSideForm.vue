@@ -28,6 +28,8 @@ const status = ref([
   { title: 'Inactive', value: 'inactive' },
 ])
 
+const evaluationTypeOther = ref()
+
 const evaluationFields = ref({
   student_id: props.evaluationData?.student_id || '',
   course_id: props.evaluationData?.course_id || '',
@@ -79,7 +81,10 @@ const handleSubmit = () => {
 
     data.append('student_id', evaluationFields.value.student_id)
     data.append('course_id', evaluationFields.value.course_id)
-    data.append('evaluation_type', evaluationFields.value.evaluation_type)
+    if (evaluationFields.value.evaluation_type === 'other')
+      data.append('evaluation_type', evaluationTypeOther.value)
+    else
+      data.append('evaluation_type', evaluationFields.value.evaluation_type)
     data.append('date', evaluationFields.value.date)
     data.append('score', evaluationFields.value.score)
     data.append('department_id', evaluationFields.value.department_id)
@@ -116,7 +121,10 @@ const handleUpdate = () => {
 
     data.append('student_id', evaluationFields.value.student_id)
     data.append('course_id', evaluationFields.value.course_id)
-    data.append('evaluation_type', evaluationFields.value.evaluation_type)
+    if (evaluationFields.value.evaluation_type === 'other')
+      data.append('evaluation_type', evaluationTypeOther.value)
+    else
+      data.append('evaluation_type', evaluationFields.value.evaluation_type)
     data.append('date', evaluationFields.value.date)
     data.append('score', evaluationFields.value.score)
     data.append('department_id', evaluationFields.value.department_id)
@@ -264,14 +272,27 @@ const dialogModelValueUpdate = (val: boolean) => {
                     { title: 'Quiz', value: 'quiz' },
                     { title: 'Assignment', value: 'assignment' },
                     { title: 'Project', value: 'project' },
+                    { title: 'Field Skills', value: 'field skills' },
+                    { title: 'Any Other', value: 'other' },
                   ]"
                   item-title="title"
-                  item-value="id"
+                  item-value="value"
                   label="Evaluation Type"
                   placeholder="Select Evaluation Type"
                   :rules="[requiredValidator]"
                 />
               </VCol>
+
+              <template v-if="evaluationFields.evaluation_type === 'other'">
+                <VCol cols="12">
+                  <AppTextField
+                    v-model="evaluationTypeOther"
+                    label="Specify Evaluation Type"
+                    placeholder="Evaluation Type"
+                    :rules="[requiredValidator]"
+                  />
+                </VCol>
+              </template>
 
               <!-- Score -->
               <VCol cols="12">

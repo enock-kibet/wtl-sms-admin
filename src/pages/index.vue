@@ -34,14 +34,14 @@ const statisticsHorizontal = [
     title: 'Class List',
     color: 'warning',
     icon: 'tabler-school',
-    stats: `${stats.value?.graduates}` || '0',
+    stats: `${stats.value?.class_list}` || '0',
   },
-  {
-    title: 'Quality of Grades',
-    color: 'success',
-    icon: 'tabler-user-star',
-    stats: `${stats.value?.quality_grades}` || '0',
-  },
+  // {
+  //   title: 'Quality of Grades',
+  //   color: 'success',
+  //   icon: 'tabler-user-star',
+  //   stats: `${stats.value?.quality_grades}` || '0',
+  // },
   {
     title: 'Fails',
     color: 'error',

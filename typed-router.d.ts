@@ -26,6 +26,7 @@ declare module 'vue-router/auto-routes' {
     'attendance-reports-instructor': RouteRecordInfo<'attendance-reports-instructor', '/attendance-reports/instructor', Record<never, never>, Record<never, never>>,
     'attendance-reports-students': RouteRecordInfo<'attendance-reports-students', '/attendance-reports/students', Record<never, never>, Record<never, never>>,
     'classes': RouteRecordInfo<'classes', '/classes', Record<never, never>, Record<never, never>>,
+    'classes-join-id': RouteRecordInfo<'classes-join-id', '/classes/join/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'courses': RouteRecordInfo<'courses', '/courses', Record<never, never>, Record<never, never>>,
     'courses-topics': RouteRecordInfo<'courses-topics', '/courses/topics', Record<never, never>, Record<never, never>>,
     'dashboard': RouteRecordInfo<'dashboard', '/dashboard', Record<never, never>, Record<never, never>>,

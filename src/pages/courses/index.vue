@@ -2,6 +2,7 @@
 import type { Courses, iCourses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
+import type { Schools } from '@/data/models/schools'
 import CourseSideForm from '@/views/modal/CourseSideForm.vue'
 
 // 👉 Event
@@ -120,39 +121,18 @@ const editCourse = (course: iCourses) => {
   isCourseHandlerSidebarActive.value = true
 }
 
-const { data: departmentsData, execute: fetchDepartments } = await useApi<any>(createUrl('/department/list',
-  {
-    query: {
-      q: searchQuery,
-      stock: selectedStock,
-      category: selectedCategory,
-      status: selectedStatus,
-      page,
-      itemsPerPage,
-      sortBy,
-      orderBy,
-    },
-  },
-))
+const { data: departmentsData, execute: fetchDepartments } = await useApi<any>(createUrl('/department/list'))
 
 const departments = computed((): Departments[] => departmentsData.value.data)
 
-const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(createUrl('/administrator/instructors',
-  {
-    query: {
-      q: searchQuery,
-      stock: selectedStock,
-      category: selectedCategory,
-      status: selectedStatus,
-      page,
-      itemsPerPage,
-      sortBy,
-      orderBy,
-    },
-  },
-))
+const { data: instructorsData, execute: fetchInstructors } = await useApi<any>(createUrl('/administrator/instructors'))
 
 const instructors = computed((): Instructors[] => instructorsData.value.data)
+
+const { data: schoolsData, execute: fetchSchools } = await useApi<any>(createUrl('/faculty/list'))
+
+const schools = computed((): Schools[] => schoolsData.value.data)
+const totalSchools = computed(() => schoolsData.value.meta.total)
 </script>
 
 <template>
@@ -292,5 +272,6 @@ const instructors = computed((): Instructors[] => instructorsData.value.data)
     :fetch-courses="fetchCourses"
     :departments-data="departments"
     :instructors-data="instructors"
+    :schools-data="schools"
   />
 </template>

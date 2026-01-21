@@ -4,6 +4,7 @@ import { VForm } from 'vuetify/components/VForm'
 import type { Courses, iCourses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
+import type { Schools } from '@/data/models/schools'
 import { submitCourse, updateCourse } from '@/pages/courses/core/request'
 
 const props = defineProps<Props>()
@@ -19,6 +20,7 @@ interface Props {
   fetchCourses?: () => Promise<void>
   departmentsData?: Departments[]
   instructorsData?: Instructors[]
+  schoolsData?: Schools[]
 }
 
 const status = ref([
@@ -29,6 +31,7 @@ const status = ref([
 const courseFields = ref({
   name: props.courseData?.name || '',
   course_code: props.courseData?.course_code || '',
+  school_id: props.courseData?.school_id || '',
   description: props.courseData?.description || '',
   department_id: props.courseData?.department_id || '',
   academic_year_id: props.courseData?.academic_year_id || '',
@@ -56,6 +59,7 @@ watch(() => props.isDrawerOpen, val => {
     courseFields.value = {
       course_code: props.courseData?.course_code || '',
       name: props.courseData?.name || '',
+      school_id: props.courseData?.school_id || '',
       department_id: props.courseData?.department_id || '',
       description: props.courseData?.description || '',
       academic_year_id: props.courseData?.academic_year_id || '',
@@ -76,6 +80,7 @@ const handleSubmit = () => {
     data.append('name', courseFields.value.name)
     data.append('course_code', courseFields.value.course_code)
     data.append('description', courseFields.value.description)
+    data.append('school_id', courseFields.value.school_id)
     data.append('department_id', courseFields.value.department_id)
     data.append('academic_year_id', courseFields.value.academic_year_id)
     data.append('status', courseFields.value.status)
@@ -116,6 +121,7 @@ const handleUpdate = () => {
     data.append('name', courseFields.value.name)
     data.append('course_code', courseFields.value.course_code)
     data.append('description', courseFields.value.description)
+    data.append('school_id', courseFields.value.school_id)
     data.append('department_id', courseFields.value.department_id)
     data.append('academic_year_id', courseFields.value.academic_year_id)
     data.append('status', courseFields.value.status)
@@ -229,6 +235,22 @@ const dialogModelValueUpdate = (val: boolean) => {
                   v-model="courseFields.course_code"
                   label="Course Code"
                   placeholder="Course Code"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+
+              <!-- School -->
+              <VCol
+                cols="12"
+                class="py-2"
+              >
+                <AppSelect
+                  v-model="courseFields.school_id"
+                  :items="schoolsData"
+                  item-title="name"
+                  item-value="id"
+                  label="School"
+                  placeholder="Select School"
                   :rules="[requiredValidator]"
                 />
               </VCol>

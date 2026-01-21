@@ -19,6 +19,7 @@ export interface iCourses {
   id?: string
   name: string
   course_code: string
+  school_id?: string
   department_id?: string
   instructors?: string[]
   academic_year_id?: string
