@@ -5,6 +5,7 @@ import type { Courses } from '@/data/models/courses'
 import type { Evaluation, iEvaluation } from '@/data/models/evaluations'
 import type { iAcademicYear } from '@/data/models/schools'
 import type { Student } from '@/data/models/students'
+import type { Topic } from '@/data/models/topics'
 import { submitEvaluation, updateEvaluation } from '@/pages/evaluations/core/request'
 
 const props = defineProps<Props>()
@@ -19,6 +20,7 @@ interface Props {
   evaluationsData?: Evaluation[]
   fetchEvaluations?: () => Promise<void>
   coursesData?: Courses[]
+  topicsData?: Topic[]
   academicYearsData?: iAcademicYear[]
   studentsData?: Student[]
 }
