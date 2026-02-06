@@ -1,3 +1,45 @@
 .layout-nav-type-vertical .layout-vertical-nav .nav-header {
   padding-block-end: 0 !important;
 }
+
+.custom-confirm-button {
+  border-radius: 5px;
+  background-color: #8ec244; /* Green */
+  color: white;
+  font-size: 14px;
+  padding-block: 10px;
+  padding-inline: 20px;
+}
+
+.custom-cancel-button {
+  border-radius: 5px;
+  background-color: #f44336; /* Red */
+  color: white;
+  font-size: 14px;
+  padding-block: 10px;
+  padding-inline: 20px;
+}
+
+.custom-confirm-button:hover,
+.custom-cancel-button:hover {
+  opacity: 0.8;
+}
+
+.swal2-title {
+  font-size: 20px;
+}
+
+.swal2-confirm {
+  background-color: #087dbe;
+  color: white;
+}
+
+.swal2-icon.swal2-warning {
+  color: orange;
+}
+
+.swal2-actions {
+  display: flex;
+  justify-content: center;
+  gap: 3vw;
+}

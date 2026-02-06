@@ -52,3 +52,37 @@ export const updateAcademicYear = async (academicYearId: string, academicYearDat
     return null
   }
 }
+
+export const deleteAcademicYear = async (ids: string[]) => {
+  try {
+    return await $api('/academic-year/delete', {
+      method: 'POST',
+      body: { uuid: [...ids] },
+      onResponseError({ response }) {
+      },
+    })
+  }
+  catch (err) {
+    console.error(err)
+    showToast('An error occurred while deleting the academic year data.', 'error')
+
+    return null
+  }
+}
+
+export const duplicateAcademicYear = async (id: string) => {
+  try {
+    return await $api('/academic-year/duplicate', {
+      method: 'POST',
+      body: { uuid: id },
+      onResponseError({ response }) {
+      },
+    })
+  }
+  catch (err) {
+    console.error(err)
+    showToast('An error occurred while duplicating the academic year data.', 'error')
+
+    return null
+  }
+}

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Swal from 'sweetalert2'
+import { deleteDepartment, duplicateDepartment } from './core/request'
 import type { Departments, iDepartments } from '@/data/models/departments'
 import type { Schools } from '@/data/models/schools'
 import DepartmentSideForm from '@/views/modal/DepartmentSideForm.vue'
@@ -97,15 +99,50 @@ const { data: schoolsData, execute: fetchSchools } = await useApi<any>(createUrl
 
 const schools = computed((): Schools[] => schoolsData.value.data)
 
-const deleteDepartment = async (id: string) => {
-  await $api(`apps/ecommerce/products/${id}`, {
-    method: 'DELETE',
+const handleDeleteDepartment = async (id: string) => {
+  console.log(selectedRows.value)
+
+  const uuids = selectedRows.value.map(row => row)
+
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to revert this!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#f00',
+    cancelButtonColor: '#8EC244',
+    confirmButtonText: 'Yes, delete it!',
+    customClass: {
+      confirmButton: 'custom-confirm-button',
+      cancelButton: 'custom-cancel-button',
+    },
+    buttonsStyling: false,
   })
 
-  // Delete from selectedRows
-  const index = selectedRows.value.findIndex(row => row === id)
-  if (index !== -1)
-    selectedRows.value.splice(index, 1)
+  if (result.isConfirmed) {
+    if (selectedRows.value.length > 0) {
+      const res = await deleteDepartment(uuids)
+      if (res) {
+        showToast('Department deleted successfully', 'success')
+        selectedRows.value = []
+      }
+    }
+    else {
+      await deleteDepartment([id])
+      showToast('Department deleted successfully', 'success')
+      selectedRows.value = []
+    }
+
+    // Refetch products
+    fetchDepartments()
+  }
+}
+
+const handleDuplicateDepartment = async (id: string) => {
+  const res = await duplicateDepartment(id)
+
+  if (res)
+    showToast('Faculty duplicated successfully', 'success')
 
   // Refetch products
   fetchDepartments()
@@ -154,6 +191,15 @@ const editDepartment = (department: iDepartments) => {
 
             <VSpacer />
             <div class="d-flex gap-4 flex-wrap align-center">
+              <template v-if="selectedRows.length > 0">
+                <VBtn
+                  color="error"
+                  prepend-icon="tabler-trash"
+                  @click="handleDeleteDepartment"
+                >
+                  {{ `Delete (${selectedRows.length})` }}
+                </VBtn>
+              </template>
               <AppSelect
                 v-model="itemsPerPage"
                 :items="[5, 10, 20, 25, 50]"
@@ -212,16 +258,9 @@ const editDepartment = (department: iDepartments) => {
                 <VMenu activator="parent">
                   <VList>
                     <VListItem
-                      value="download"
-                      prepend-icon="tabler-download"
-                    >
-                      Download
-                    </VListItem>
-
-                    <VListItem
                       value="delete"
                       prepend-icon="tabler-trash"
-                      @click="deleteDepartment(item.id)"
+                      @click="handleDeleteDepartment(item.id)"
                     >
                       Delete
                     </VListItem>
@@ -229,6 +268,7 @@ const editDepartment = (department: iDepartments) => {
                     <VListItem
                       value="duplicate"
                       prepend-icon="tabler-copy"
+                      @click="handleDuplicateDepartment(item.id)"
                     >
                       Duplicate
                     </VListItem>

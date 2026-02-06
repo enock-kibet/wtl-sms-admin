@@ -46,3 +46,37 @@ export const updateSchool = async (schoolId: string, schoolData: iSchools, error
     return null
   }
 }
+
+export const deleteSchool = async (ids: string[]) => {
+  try {
+    return await $api('/faculty/delete', {
+      method: 'POST',
+      body: { uuid: [...ids] },
+      onResponseError({ response }) {
+      },
+    })
+  }
+  catch (err) {
+    console.error(err)
+    showToast('An error occurred while deleting the school data.', 'error')
+
+    return null
+  }
+}
+
+export const duplicateSchool = async (id: string) => {
+  try {
+    return await $api('/faculty/duplicate', {
+      method: 'POST',
+      body: { uuid: id },
+      onResponseError({ response }) {
+      },
+    })
+  }
+  catch (err) {
+    console.error(err)
+    showToast('An error occurred while duplicating the school data.', 'error')
+
+    return null
+  }
+}

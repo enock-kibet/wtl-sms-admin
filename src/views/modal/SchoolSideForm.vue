@@ -76,8 +76,6 @@ const handleUpdate = () => {
 
     const result = await updateSchool(props.schoolData?.id, schoolFields.value, errors)
 
-    console.log(result)
-
     // Only close drawer if request succeeds AND has no validation errors
     if (result) {
       props.fetchSchools && await props.fetchSchools()

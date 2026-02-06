@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Swal from 'sweetalert2'
+import { deleteCourse, duplicateCourse } from './core/request'
 import type { Courses, iCourses } from '@/data/models/courses'
 import type { Departments } from '@/data/models/departments'
 import type { Instructors } from '@/data/models/instructors'
@@ -87,20 +89,6 @@ const { data: coursesData, execute: fetchCourses } = await useApi<any>(createUrl
 const courses = computed((): Courses[] => coursesData.value.data)
 const totalCourses = computed(() => coursesData.value.meta.total)
 
-const deleteCourse = async (id: string) => {
-  await $api(`apps/ecommerce/products/${id}`, {
-    method: 'DELETE',
-  })
-
-  // Delete from selectedRows
-  const index = selectedRows.value.findIndex(row => row === id)
-  if (index !== -1)
-    selectedRows.value.splice(index, 1)
-
-  // Refetch products
-  fetchCourses()
-}
-
 const addCourse = () => {
   selectedCourse.value = {
     id: undefined,
@@ -133,6 +121,55 @@ const { data: schoolsData, execute: fetchSchools } = await useApi<any>(createUrl
 
 const schools = computed((): Schools[] => schoolsData.value.data)
 const totalSchools = computed(() => schoolsData.value.meta.total)
+
+const handleDeleteCourse = async (id: string) => {
+  console.log(selectedRows.value)
+
+  const uuids = selectedRows.value.map(row => row)
+
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to revert this!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#f00',
+    cancelButtonColor: '#8EC244',
+    confirmButtonText: 'Yes, delete it!',
+    customClass: {
+      confirmButton: 'custom-confirm-button',
+      cancelButton: 'custom-cancel-button',
+    },
+    buttonsStyling: false,
+  })
+
+  if (result.isConfirmed) {
+    if (selectedRows.value.length > 0) {
+      const res = await deleteCourse(uuids)
+      if (res) {
+        showToast('Course deleted successfully', 'success')
+        selectedRows.value = []
+      }
+    }
+    else {
+      await deleteCourse([id])
+      showToast('Course deleted successfully', 'success')
+      selectedRows.value = []
+    }
+
+    // Refetch products
+    fetchCourses()
+  }
+}
+
+const handleDuplicateCourse = async (id: string) => {
+  const res = await duplicateCourse(id)
+
+  if (res)
+    showToast('Faculty duplicated successfully', 'success')
+
+  // Refetch products
+  fetchCourses()
+}
 </script>
 
 <template>
@@ -161,6 +198,15 @@ const totalSchools = computed(() => schoolsData.value.meta.total)
 
             <VSpacer />
             <div class="d-flex gap-4 flex-wrap align-center">
+              <template v-if="selectedRows.length > 0">
+                <VBtn
+                  color="error"
+                  prepend-icon="tabler-trash"
+                  @click="handleDeleteCourse"
+                >
+                  {{ `Delete (${selectedRows.length})` }}
+                </VBtn>
+              </template>
               <AppSelect
                 v-model="itemsPerPage"
                 :items="[5, 10, 20, 25, 50]"
@@ -228,16 +274,9 @@ const totalSchools = computed(() => schoolsData.value.meta.total)
                 <VMenu activator="parent">
                   <VList>
                     <VListItem
-                      value="download"
-                      prepend-icon="tabler-download"
-                    >
-                      Download
-                    </VListItem>
-
-                    <VListItem
                       value="delete"
                       prepend-icon="tabler-trash"
-                      @click="deleteCourse(item.id)"
+                      @click="handleDeleteCourse(item.id)"
                     >
                       Delete
                     </VListItem>
@@ -245,6 +284,7 @@ const totalSchools = computed(() => schoolsData.value.meta.total)
                     <VListItem
                       value="duplicate"
                       prepend-icon="tabler-copy"
+                      @click="handleDuplicateCourse(item.id)"
                     >
                       Duplicate
                     </VListItem>

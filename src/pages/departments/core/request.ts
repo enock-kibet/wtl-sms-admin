@@ -46,3 +46,37 @@ export const updateDepartment = async (departmentId: string, departmentData: iDe
     return null
   }
 }
+
+export const deleteDepartment = async (ids: string[]) => {
+  try {
+    return await $api('/department/delete', {
+      method: 'POST',
+      body: { uuid: [...ids] },
+      onResponseError({ response }) {
+      },
+    })
+  }
+  catch (err) {
+    console.error(err)
+    showToast('An error occurred while deleting the department data.', 'error')
+
+    return null
+  }
+}
+
+export const duplicateDepartment = async (id: string) => {
+  try {
+    return await $api('/department/duplicate', {
+      method: 'POST',
+      body: { uuid: id },
+      onResponseError({ response }) {
+      },
+    })
+  }
+  catch (err) {
+    console.error(err)
+    showToast('An error occurred while duplicating the department data.', 'error')
+
+    return null
+  }
+}

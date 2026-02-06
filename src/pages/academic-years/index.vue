@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Swal from 'sweetalert2'
+import { deleteAcademicYear, duplicateAcademicYear } from './core/request'
 import type { iAcademicYear } from '@/data/models/schools'
 import AcademicYearForm from '@/views/modal/AcademicYearForm.vue'
 
@@ -48,6 +50,8 @@ const selectedYear = ref<iAcademicYear>({
   name: '',
   description: '',
   status: '',
+  start_date: '',
+  end_date: '',
 })
 
 const resolveStatus = (statusMsg: string) => {
@@ -75,17 +79,52 @@ const { data: academicYearsData, execute: fetchAcademicYears } = await useApi<an
 ))
 
 const academicYears = computed((): iAcademicYear[] => academicYearsData.value.data)
-const totalAcademicYears = computed(() => academicYearsData.value.total)
+const totalAcademicYears = computed(() => academicYearsData.value.meta.total)
 
-const deleteAcademicYear = async (id: string) => {
-  await $api(`apps/ecommerce/products/${id}`, {
-    method: 'DELETE',
+const handleDeleteAcademicYear = async (id: string) => {
+  console.log(selectedRows.value)
+
+  const uuids = selectedRows.value.map(row => row)
+
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to revert this!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#f00',
+    cancelButtonColor: '#8EC244',
+    confirmButtonText: 'Yes, delete it!',
+    customClass: {
+      confirmButton: 'custom-confirm-button',
+      cancelButton: 'custom-cancel-button',
+    },
+    buttonsStyling: false,
   })
 
-  // Delete from selectedRows
-  const index = selectedRows.value.findIndex(row => row === id)
-  if (index !== -1)
-    selectedRows.value.splice(index, 1)
+  if (result.isConfirmed) {
+    if (selectedRows.value.length > 0) {
+      const res = await deleteAcademicYear(uuids)
+      if (res) {
+        showToast('Academic Year deleted successfully', 'success')
+        selectedRows.value = []
+      }
+    }
+    else {
+      await deleteAcademicYear([id])
+      showToast('Academic year deleted successfully', 'success')
+      selectedRows.value = []
+    }
+
+    // Refetch products
+    fetchAcademicYears()
+  }
+}
+
+const handleDuplicateAcademicYear = async (id: string) => {
+  const res = await duplicateAcademicYear(id)
+
+  if (res)
+    showToast('Faculty duplicated successfully', 'success')
 
   // Refetch products
   fetchAcademicYears()
@@ -98,6 +137,8 @@ const addAcademicYear = () => {
     icon: null,
     description: '',
     status: '',
+    start_date: '',
+    end_date: '',
   }
   isSchoolHandlerSidebarActive.value = true
 }
@@ -113,7 +154,7 @@ const editAcademicYear = (year: iAcademicYear) => {
     <VRow class="match-height my-4">
       <VCol
         cols="12"
-        md="9"
+        md="6"
         class="py-0"
       >
         <h4 class="text-h5">
@@ -122,15 +163,26 @@ const editAcademicYear = (year: iAcademicYear) => {
       </VCol>
       <VCol
         cols="12"
-        md="3"
+        md="6"
       >
-        <VBtn
-          color="primary"
-          prepend-icon="tabler-plus"
-          @click="addAcademicYear"
-        >
-          Add Academic Year
-        </VBtn>
+        <div class="d-flex float-end gap-3">
+          <template v-if="selectedRows.length > 0">
+            <VBtn
+              color="error"
+              prepend-icon="tabler-trash"
+              @click="handleDeleteAcademicYear"
+            >
+              {{ `Delete (${selectedRows.length})` }}
+            </VBtn>
+          </template>
+          <VBtn
+            color="primary"
+            prepend-icon="tabler-plus"
+            @click="addAcademicYear"
+          >
+            Add Academic Year
+          </VBtn>
+        </div>
       </VCol>
       <template v-if="academicYears.length > 0">
         <template
@@ -141,11 +193,41 @@ const editAcademicYear = (year: iAcademicYear) => {
             cols="12"
             md="3"
           >
-            <VCard class="mb-6 text-center position-relative">
+            <VCard
+              class="mb-6 text-center position-relative"
+              flat
+            >
               <div class="position-absolute right-0">
-                <IconBtn @click="editAcademicYear(year)">
-                  <VIcon icon="tabler-edit" />
-                </IconBtn>
+                <div class="d-flexx">
+                  <VCheckbox
+                    v-model="selectedRows"
+                    :value="year.id"
+                  />
+                  <div class="">
+                    <IconBtn
+                      color="primary"
+                      @click="editAcademicYear(year)"
+                    >
+                      <VIcon icon="tabler-edit" />
+                    </IconBtn>
+                  </div>
+                  <div class="">
+                    <IconBtn
+                      color="success"
+                      @click="handleDuplicateAcademicYear(year.id ?? '')"
+                    >
+                      <VIcon icon="tabler-copy" />
+                    </IconBtn>
+                  </div>
+                  <div class="">
+                    <IconBtn
+                      color="error"
+                      @click="handleDeleteAcademicYear(year.id ?? '')"
+                    >
+                      <VIcon icon="tabler-trash" />
+                    </IconBtn>
+                  </div>
+                </div>
               </div>
               <VCardText>
                 <template v-if="year.icon_url">
@@ -180,6 +262,14 @@ const editAcademicYear = (year: iAcademicYear) => {
             </VCard>
           </VCol>
         </template>
+        <!-- pagination -->
+        <VCol cols="12">
+          <TablePagination
+            v-model:page="page"
+            :items-per-page="itemsPerPage"
+            :total-items="totalAcademicYears"
+          />
+        </VCol>
       </template>
       <template v-else>
         <VCol
